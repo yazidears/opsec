@@ -1,0 +1,38 @@
+.TH OPSEC 6 "August 13, 2026" "opsec 0.1.0" "Games"
+.SH NAME
+opsec \- terminal OPSEC meme animation
+.SH SYNOPSIS
+.B opsec
+[\fIOPTION\fR]
+.SH DESCRIPTION
+.B opsec
+runs the OPSEC Express, a small terminal animation for when you meant to type
+.BR ls .
+It is intentionally harmless: the train crosses the terminal once and exits.
+.PP
+When standard output is not a terminal, one plain frame is printed instead of
+using terminal control sequences.
+.SH OPTIONS
+.TP
+.BR \-1 , \ \-\-once
+Print one frame and exit.
+.TP
+.BR \-n , \ \-\-no-color
+Disable ANSI colors.
+.TP
+.BR \-s , \ \-\-speed=MS
+Set the frame delay in milliseconds. Values from 10 to 2000 are accepted.
+.TP
+.BR \-h , \ \-\-help
+Show a short help message.
+.TP
+.BR \-v , \ \-\-version
+Show the installed version.
+.SH ENVIRONMENT
+.TP
+.B NO_COLOR
+Disable ANSI colors when set to any value.
+.SH AUTHOR
+OPSEC maintainers
+.SH LICENSE
+MIT License.

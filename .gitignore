@@ -1,0 +1,16 @@
+# Local build output
+/opsec
+opsec-*.tar.gz
+*.deb
+*.buildinfo
+*.changes
+
+# Debian helper output
+/debian/.debhelper/
+/debian/files
+/debian/opsec/
+/debian/opsec.substvars
+/.pc/
+
+# macOS metadata
+.DS_Store

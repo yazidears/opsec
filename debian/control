@@ -1,0 +1,14 @@
+Source: opsec
+Section: games
+Priority: optional
+Maintainer: OPSEC maintainers <opsec@localhost>
+Standards-Version: 4.6.2
+Build-Depends: debhelper-compat (= 13)
+
+Package: opsec
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: terminal OPSEC meme animation
+ A tiny terminal privacy meme for when you meant to type ls.
+ The OPSEC Express rolls across the terminal with classified cargo,
+ redactions, and a reminder to check your dotfiles.
