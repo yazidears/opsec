@@ -99,13 +99,13 @@ jobs:
           printf '%s' "$OPSEC_GPG_PRIVATE_KEY" | gpg --batch --import
           gpg --batch --yes --pinentry-mode loopback \
             --passphrase "$OPSEC_GPG_PASSPHRASE" \
-            --local-user DEB78272FB4C0FC9E27D2A3082ED2B6BD46E7471 \
+            --local-user 1DB4325C6AF594F819B7F3272EC791F13FAE6DF6 \
             --digest-algo SHA256 --clearsign \
             --output "$repo/dists/stable/InRelease" \
             "$repo/dists/stable/Release"
           gpg --batch --yes --pinentry-mode loopback \
             --passphrase "$OPSEC_GPG_PASSPHRASE" \
-            --local-user DEB78272FB4C0FC9E27D2A3082ED2B6BD46E7471 \
+            --local-user 1DB4325C6AF594F819B7F3272EC791F13FAE6DF6 \
             --digest-algo SHA256 --armor --detach-sign \
             --output "$repo/dists/stable/Release.gpg" \
             "$repo/dists/stable/Release"
