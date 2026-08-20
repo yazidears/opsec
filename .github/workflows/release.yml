@@ -116,7 +116,7 @@ jobs:
           <meta charset="utf-8">
           <title>opsec apt repository</title>
           <h1>opsec apt repository</h1>
-          <p>Install the OPSEC Express terminal meme:</p>
+          <p>Install the operation-security terminal meme:</p>
           <pre>sudo install -d -m 0755 /etc/apt/keyrings
           curl -fsSL https://yazidears.github.io/opsec/opsec-archive-keyring.gpg | sudo tee /etc/apt/keyrings/opsec-archive-keyring.gpg >/dev/null
           echo "deb [arch=\$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/opsec-archive-keyring.gpg] https://yazidears.github.io/opsec stable main" | sudo tee /etc/apt/sources.list.d/opsec.list >/dev/null
