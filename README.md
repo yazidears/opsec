@@ -62,7 +62,27 @@ opsec
 The package is architecture-aware and has no runtime dependency beyond the
 standard C library. The `debian/` directory is ready for a Debian repository,
 PPA, or other apt publisher; making `sudo apt install opsec` work for everyone
-requires publishing the built package and having users add that repository.
+requires users to add the published repository once.
+
+## Install from the public apt repository
+
+The repository currently publishes packages for Debian/Ubuntu `amd64` and
+`arm64`:
+
+```sh
+sudo install -d -m 0755 /etc/apt/keyrings
+curl -fsSL https://yazidears.github.io/opsec/opsec-archive-keyring.gpg \
+  | sudo tee /etc/apt/keyrings/opsec-archive-keyring.gpg >/dev/null
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/opsec-archive-keyring.gpg] https://yazidears.github.io/opsec stable main" \
+  | sudo tee /etc/apt/sources.list.d/opsec.list >/dev/null
+sudo apt update
+sudo apt install opsec
+```
+
+The repository metadata is signed with the public key in
+[`opsec-archive-key.asc`](opsec-archive-key.asc). The package source and
+release artifacts are available at
+<https://github.com/yazidears/opsec>.
 
 ## License
 

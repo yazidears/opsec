@@ -1,0 +1,161 @@
+name: Build and publish opsec
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: opsec-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install build and repository tools
+        run: |
+          sudo dpkg --add-architecture arm64
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            apt-utils \
+            build-essential \
+            crossbuild-essential-arm64 \
+            debhelper \
+            debhelper-compat \
+            devscripts \
+            dpkg-dev \
+            gnupg
+
+      - name: Build Debian packages and source archive
+        env:
+          SOURCE_DATE_EPOCH: 0
+        run: |
+          set -euxo pipefail
+          version="$(dpkg-parsechangelog -S Version | sed 's/-[^-]*$//')"
+          dist="$RUNNER_TEMP/opsec-dist"
+          mkdir -p "$dist"
+
+          dpkg-buildpackage -us -uc -b -a amd64
+          dpkg-buildpackage -us -uc -b -a arm64
+          cp ../opsec_*.deb "$dist/"
+
+          tar --sort=name --mtime='UTC 1970-01-01' \
+            --owner=0 --group=0 --numeric-owner \
+            --transform="s,^,opsec-${version}/," \
+            -czf "$dist/opsec-${version}.tar.gz" \
+            LICENSE Makefile README.md src
+
+          printf '%s\n' "$version" > "$RUNNER_TEMP/opsec-version"
+
+      - name: Create signed apt repository
+        env:
+          OPSEC_GPG_PRIVATE_KEY: ${{ secrets.OPSEC_GPG_PRIVATE_KEY }}
+          OPSEC_GPG_PASSPHRASE: ${{ secrets.OPSEC_GPG_PASSPHRASE }}
+        run: |
+          set -euxo pipefail
+          version="$(cat "$RUNNER_TEMP/opsec-version")"
+          dist="$RUNNER_TEMP/opsec-dist"
+          repo="$RUNNER_TEMP/opsec-repo"
+          gpg_home="$RUNNER_TEMP/opsec-gnupg"
+          mkdir -p "$repo/pool/main/o/opsec" "$gpg_home"
+          chmod 700 "$gpg_home"
+
+          cp "$dist"/*.deb "$repo/pool/main/o/opsec/"
+          cp opsec-archive-key.asc "$repo/opsec-archive-key.asc"
+
+          for arch in amd64 arm64; do
+            mkdir -p "$repo/dists/stable/main/binary-$arch"
+            (
+              cd "$repo"
+              dpkg-scanpackages --arch "$arch" pool /dev/null \
+                > "dists/stable/main/binary-$arch/Packages"
+            )
+            gzip -9c "$repo/dists/stable/main/binary-$arch/Packages" \
+              > "$repo/dists/stable/main/binary-$arch/Packages.gz"
+          done
+
+          cat > "$repo/apt-ftparchive.conf" <<'EOF'
+          APT::FTPArchive::Release::Origin "OPSEC";
+          APT::FTPArchive::Release::Label "OPSEC";
+          APT::FTPArchive::Release::Suite "stable";
+          APT::FTPArchive::Release::Codename "stable";
+          APT::FTPArchive::Release::Architectures "amd64 arm64";
+          APT::FTPArchive::Release::Components "main";
+          EOF
+          apt-ftparchive -c "$repo/apt-ftparchive.conf" release "$repo/dists/stable" \
+            > "$repo/dists/stable/Release"
+
+          export GNUPGHOME="$gpg_home"
+          printf '%s' "$OPSEC_GPG_PRIVATE_KEY" | gpg --batch --import
+          gpg --batch --yes --pinentry-mode loopback \
+            --passphrase "$OPSEC_GPG_PASSPHRASE" \
+            --local-user DEB78272FB4C0FC9E27D2A3082ED2B6BD46E7471 \
+            --digest-algo SHA256 --clearsign \
+            --output "$repo/dists/stable/InRelease" \
+            "$repo/dists/stable/Release"
+          gpg --batch --yes --pinentry-mode loopback \
+            --passphrase "$OPSEC_GPG_PASSPHRASE" \
+            --local-user DEB78272FB4C0FC9E27D2A3082ED2B6BD46E7471 \
+            --digest-algo SHA256 --armor --detach-sign \
+            --output "$repo/dists/stable/Release.gpg" \
+            "$repo/dists/stable/Release"
+          gpg --batch --dearmor --output "$repo/opsec-archive-keyring.gpg" \
+            opsec-archive-key.asc
+
+          cat > "$repo/index.html" <<EOF
+          <!doctype html>
+          <meta charset="utf-8">
+          <title>opsec apt repository</title>
+          <h1>opsec apt repository</h1>
+          <p>Install the OPSEC Express terminal meme:</p>
+          <pre>sudo install -d -m 0755 /etc/apt/keyrings
+          curl -fsSL https://yazidears.github.io/opsec/opsec-archive-keyring.gpg | sudo tee /etc/apt/keyrings/opsec-archive-keyring.gpg >/dev/null
+          echo "deb [arch=\$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/opsec-archive-keyring.gpg] https://yazidears.github.io/opsec stable main" | sudo tee /etc/apt/sources.list.d/opsec.list >/dev/null
+          sudo apt update
+          sudo apt install opsec</pre>
+          <p>Published version: ${version}</p>
+          EOF
+          touch "$repo/.nojekyll"
+
+      - name: Upload apt repository to Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/opsec-repo
+
+      - name: Publish GitHub release assets
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euxo pipefail
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "$RUNNER_TEMP/opsec-dist"/* --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "$RUNNER_TEMP/opsec-dist"/* \
+              --title "opsec ${GITHUB_REF_NAME#v}" \
+              --generate-notes
+          fi
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy apt repository
+        id: deployment
+        uses: actions/deploy-pages@v4

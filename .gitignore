@@ -4,7 +4,6 @@ opsec-*.tar.gz
 *.deb
 *.buildinfo
 *.changes
-
 # Debian helper output
 /debian/.debhelper/
 /debian/files
