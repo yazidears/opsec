@@ -1,8 +1,8 @@
 # opsec
 
-`opsec` is the OPSEC Express: a tiny terminal privacy meme for when you meant
-to type `ls`. It behaves like the classic `sl` gag, but the train is carrying
-classified cargo, redactions, and a reminder to check your dotfiles.
+`opsec` is a tiny operation-security terminal meme. Somebody says “install
+opsec” and the audit train arrives with classified cargo, redactions, and a
+reminder to check your dotfiles.
 
 ## Build locally
 
@@ -50,7 +50,7 @@ On Debian or Ubuntu, install the packaging toolchain and build the package:
 sudo apt update
 sudo apt install build-essential debhelper-compat devscripts
 dpkg-buildpackage -us -uc -b
-sudo apt install ../opsec_0.1.0-1_$(dpkg --print-architecture).deb
+sudo apt install ../opsec_0.1.1-1_$(dpkg --print-architecture).deb
 ```
 
 After that, run it with:

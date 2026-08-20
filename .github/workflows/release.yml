@@ -24,7 +24,6 @@ jobs:
 
       - name: Install build and repository tools
         run: |
-          sudo dpkg --add-architecture arm64
           sudo apt-get update
           sudo apt-get install --no-install-recommends -y \
             apt-utils \

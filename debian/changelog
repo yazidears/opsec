@@ -1,5 +1,5 @@
-opsec (0.1.0-1) unstable; urgency=medium
+opsec (0.1.1-1) unstable; urgency=medium
 
-  * Initial release of the OPSEC Express terminal animation.
+  * Publish signed Debian apt repository and arm64 package.
 
- -- OPSEC maintainers <opsec@localhost>  Thu, 13 Aug 2026 16:40:00 +0200
+ -- OPSEC maintainers <opsec@localhost>  Thu, 20 Aug 2026 14:30:00 +0200

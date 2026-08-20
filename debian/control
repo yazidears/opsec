@@ -9,6 +9,6 @@ Package: opsec
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: terminal OPSEC meme animation
- A tiny terminal privacy meme for when you meant to type ls.
- The OPSEC Express rolls across the terminal with classified cargo,
- redactions, and a reminder to check your dotfiles.
+ A tiny operation-security meme for the terminal.
+ The OPSEC audit train rolls across the screen with classified cargo,
+ redactions, and reminders to rotate keys and check dotfiles.

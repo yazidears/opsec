@@ -10,7 +10,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#define OPSEC_VERSION "0.1.0"
+#define OPSEC_VERSION "0.1.1"
 #define DEFAULT_FRAME_DELAY_MS 70
 #define FALLBACK_WIDTH 80
 #define FALLBACK_HEIGHT 24
@@ -20,9 +20,9 @@ static bool cursor_hidden = false;
 
 static const char *const train[] = {
     "          .----------------------------------------------------.",
-    "  _______/  OPSEC EXPRESS // CHECK DOTFILES // NO LEAKS       \\___",
+    "  _______/  OPERATION SECURITY // INSTALL OPSEC // AUDIT NOW  \\___",
     " /  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  \\",
-    "|  | CLASSIFIED | [REDACTED] | SHIP? NO. AUDIT. | 0xDEAD |  |",
+    "|  | CLASSIFIED | DOTFILES? REDACTED | KEYS? ROTATE | 0xDEAD |  |",
     "'--o-------------o------------o------------------o---------o------'",
     "    O             O            O                  O         O     "
 };
@@ -184,7 +184,7 @@ static int parse_speed(const char *value, int *speed)
 static void print_help(const char *program)
 {
     printf("Usage: %s [OPTION]\n\n", program);
-    puts("Run the OPSEC Express: a tiny terminal privacy meme for when you meant ls.");
+    puts("Run the OPSEC audit train: a tiny operation-security terminal meme.");
     puts("");
     puts("Options:");
     puts("  -1, --once       print one frame and exit");
