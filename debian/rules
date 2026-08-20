@@ -13,7 +13,7 @@ override_dh_auto_install:
 
 override_dh_shlibdeps:
 ifeq ($(DEB_HOST_ARCH),arm64)
-	dh_shlibdeps -l/usr/aarch64-linux-gnu/lib -l/usr/lib/aarch64-linux-gnu
+	dh_shlibdeps -l/usr/aarch64-linux-gnu/lib
 else
 	dh_shlibdeps
 endif
